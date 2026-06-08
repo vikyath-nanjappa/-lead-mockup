@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Enrichment — v1 Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --blue:#2563EB;--blue-lt:rgba(37,99,235,.1);
+  --green:#059669;--green-lt:rgba(5,150,105,.1);
+  --amber:#D97706;--amber-lt:rgba(245,158,11,.1);
+  --red:#DC2626;--red-lt:rgba(220,38,38,.1);
+  --slate:#0F172A;--muted:#64748B;--faint:#94A3B8;
+  --border:#E2E8F0;--bg:#F8FAFC;--white:#fff;
+  --font:'Inter',system-ui,sans-serif
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#EEF2F6;font-family:var(--font);padding:24px;color:var(--slate)}
+.app{display:flex;min-height:720px;max-width:1260px;margin:0 auto;background:var(--white);border-radius:14px;overflow:hidden;font-size:13px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(15,23,42,.07)}
+
+/* ── Sidebar ── */
+.sidebar{width:210px;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid var(--border)}
+.logo{padding:16px 14px 12px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.logo-icon{width:28px;height:28px;background:var(--blue);color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.logo-text{font-size:13px;font-weight:600}
+.logo-sub{font-size:10px;color:var(--faint);margin-top:1px}
+.nav{padding:8px 6px;flex:1;overflow:auto}
+.nav-label{font-size:9px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;padding:10px 10px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;color:var(--muted);font-size:12px;border:none;background:none;width:100%;text-align:left;transition:background .1s,color .1s}
+.ni:hover{background:#F1F5F9;color:var(--slate)}
+.ni.active{background:var(--blue-lt);color:var(--blue);border-left:2px solid var(--blue)}
+.ni.locked{opacity:.45;cursor:default;pointer-events:none}
+.ni i{font-size:14px;width:16px;flex-shrink:0}
+.nbadge{margin-left:auto;background:var(--amber);color:#fff;border-radius:999px;font-size:9px;font-weight:700;padding:1px 5px}
+.nbadge.blue{background:var(--blue)}
+.nbadge.green{background:var(--green)}
+.phase-tag{margin-left:auto;font-size:9px;font-weight:600;color:var(--faint);background:#F1F5F9;padding:1px 5px;border-radius:3px}
+.sf{padding:9px 12px;border-top:1px solid var(--border);font-size:10px;color:var(--faint);line-height:1.5}
+
+/* ── Main ── */
+.main{flex:1;overflow:auto;background:var(--bg)}
+.view{display:none}.view.active{display:block}
+.ph{padding:18px 22px 0;display:flex;align-items:flex-start;justify-content:space-between}
+.pt{font-size:17px;font-weight:600}
+.ps{font-size:11px;color:var(--muted);margin-top:2px}
+.ct{padding:14px 22px 22px}
+.pbtn{background:var(--blue);color:#fff;border:none;padding:7px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.pbtn:hover{background:#1D4ED8}
+.pbtn.amber{background:var(--amber)}.pbtn.amber:hover{background:#B45309}
+.pbtn.ghost{background:var(--white);color:#334155;border:1px solid var(--border)}.pbtn.ghost:hover{background:#F1F5F9}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:2px;background:#F1F5F9;border-radius:7px;padding:3px;width:fit-content;margin-bottom:14px}
+.tab{padding:5px 14px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted)}
+.tab.active{background:var(--white);color:var(--slate);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* ── Cards ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:13px}
+.sg4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.sg3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.sg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.sv{font-size:22px;font-weight:700;line-height:1}
+.sd{font-size:10px;color:var(--faint);margin-top:3px}
+
+/* ── Pipeline ── */
+.pipeline{display:flex;align-items:center;background:var(--white);border:1px solid var(--border);border-radius:9px;padding:12px 16px;margin-bottom:14px;overflow-x:auto;gap:0}
+.pipe-box{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:8px 11px;min-width:105px;text-align:center;flex-shrink:0}
+.pipe-box.src{border-color:var(--blue);background:var(--blue-lt)}
+.pipe-box.mid{border-color:var(--amber);background:var(--amber-lt)}
+.pipe-box.end{border-color:var(--green);background:var(--green-lt)}
+.pipe-title{font-size:10px;font-weight:600;margin-bottom:2px}
+.pipe-sub{font-size:9px;color:var(--faint);line-height:1.4}
+.pipe-arrow{font-size:16px;color:var(--faint);padding:0 5px;flex-shrink:0}
+
+/* ── Quota gauges ── */
+.qg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.qc{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.ql{font-size:9px;color:var(--faint);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:flex;align-items:center;gap:3px}
+.qv{font-size:14px;font-weight:700}
+.qbar{height:3px;background:var(--border);border-radius:2px;margin-top:5px}
+.qfill{height:100%;border-radius:2px}
+.qs{font-size:9px;color:var(--faint);margin-top:3px}
+
+/* ── Badges ── */
+.b{display:inline-flex;align-items:center;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;gap:3px}
+.b-p1{background:rgba(5,150,105,.12);color:var(--green)}
+.b-p2{background:var(--blue-lt);color:var(--blue)}
+.b-p3{background:#F1F5F9;color:var(--muted)}
+.b-inactive{background:#F1F5F9;color:var(--faint);opacity:.7}
+.b-amber{background:var(--amber-lt);color:var(--amber)}
+.b-red{background:var(--red-lt);color:var(--red)}
+
+/* ── Status dots ── */
+.sdot{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:500}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.s-await{color:var(--amber)}.s-await .dot{background:var(--amber)}
+.s-approved{color:var(--green)}.s-approved .dot{background:#22C55E}
+.s-none{color:var(--faint)}.s-none .dot{background:#CBD5E1}
+.s-nomatch{color:var(--red)}.s-nomatch .dot{background:var(--red)}
+.s-prog{color:var(--blue)}.s-prog .dot{background:var(--blue);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── Tables ── */
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;padding:7px 12px;color:var(--faint);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:.05em;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0}
+.tbl td{padding:9px 12px;border-bottom:1px solid #EEF2F6;color:#334155;vertical-align:middle}
+.tbl tr:hover td{background:var(--bg);cursor:pointer}
+.tbl .cc{font-weight:500;color:var(--slate)}
+.panel{background:var(--white);border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.divlabel{font-size:9px;color:var(--faint);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin:12px 0 7px}
+
+/* ── Filters ── */
+.fbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fsel{background:var(--white);border:1px solid #CBD5E1;color:#334155;padding:5px 9px;border-radius:6px;font-size:11px}
+.sinp{background:var(--white);border:1px solid #CBD5E1;color:var(--slate);padding:5px 10px;border-radius:6px;font-size:11px;flex:1;min-width:140px}
+.sinp::placeholder{color:var(--faint)}
+
+/* ── Review queue ── */
+.conf-bar{height:4px;background:var(--border);border-radius:2px;width:60px;display:inline-block;vertical-align:middle}
+.conf-fill{height:100%;border-radius:2px}
+.review-expand{background:var(--bg);padding:12px;border-bottom:1px solid var(--border)}
+.re-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.re-col{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:10px 12px}
+.re-col-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:8px}
+.re-field{margin-bottom:5px}
+.re-field-label{font-size:9px;color:var(--faint);margin-bottom:1px}
+.re-field-val{font-size:11px;color:var(--slate);font-weight:500}
+.re-field-val.found{color:var(--blue)}
+.trail{font-size:10px;color:var(--muted);background:var(--white);border:1px solid var(--border);border-radius:5px;padding:6px 9px;margin-bottom:8px;line-height:1.6}
+.re-actions{display:flex;gap:6px;justify-content:flex-end}
+.btn-approve{background:var(--green-lt);color:var(--green);border:1px solid rgba(5,150,105,.25);padding:5px 12px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer}
+.btn-edit{background:var(--white);color:#334155;border:1px solid var(--border);padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer}
+.btn-skip{background:var(--white);color:var(--muted);border:1px solid var(--border);padding:5px 10px;border-radius:5px;font-size:11px;cursor:pointer}
+.btn-nomatch{background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,.2);padding:5px 10px;border-radius:5px;font-size:11px;cursor:pointer}
+
+/* ── Settings ── */
+.api-tabs{display:flex;gap:2px;background:#F1F5F9;border-radius:7px;padding:3px;flex-wrap:wrap;margin-bottom:14px}
+.api-tab{padding:5px 12px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);display:flex;align-items:center;gap:5px}
+.api-tab.active{background:var(--white);color:var(--slate);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.api-tab-pane{display:none}.api-tab-pane.active{display:block}
+.srow{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:11px 13px;margin-bottom:8px}
+.srow-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.srow-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.srow-desc{font-size:10px;color:var(--muted);line-height:1.5;margin-bottom:7px}
+.srow-note{font-size:10px;border-radius:4px;padding:4px 7px;line-height:1.5;margin-top:5px}
+.note-info{background:rgba(37,99,235,.06);color:#1D4ED8}
+.note-warn{background:var(--amber-lt);color:#92400E}
+.fl{font-size:10px;color:var(--muted);font-weight:600;margin-bottom:3px}
+.fi{width:100%;background:var(--white);border:1px solid #CBD5E1;color:var(--slate);padding:6px 9px;border-radius:6px;font-size:11px;margin-bottom:6px;font-family:monospace}
+.fi::placeholder{color:var(--faint)}
+.tbtn{background:#F1F5F9;color:var(--blue);border:none;padding:4px 8px;border-radius:4px;font-size:10px;cursor:pointer;margin-bottom:8px}
+.tgl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.tgl{width:34px;height:19px;background:#CBD5E1;border-radius:10px;position:relative;cursor:pointer;flex-shrink:0}
+.tgl.on{background:var(--blue)}
+.tglk{width:13px;height:13px;background:#fff;border-radius:7px;position:absolute;top:3px;left:3px;transition:left .15s}
+.tgl.on .tglk{left:18px}
+.priority-tiers{display:flex;flex-direction:column;gap:6px}
+.tier-row{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:9px 12px;display:flex;align-items:flex-start;gap:10px}
+.tier-drag{color:var(--faint);font-size:14px;cursor:grab;margin-top:2px}
+.tier-body{flex:1}
+.tier-name-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.tier-name-input{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 7px;font-size:11px;font-weight:600;color:var(--slate);width:90px}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:10px;padding:2px 7px;color:#334155;display:flex;align-items:center;gap:3px}
+.chip-x{color:var(--faint);cursor:pointer;font-size:11px;line-height:1}
+.chip-add{background:none;border:1px dashed #CBD5E1;border-radius:4px;font-size:10px;padding:2px 7px;color:var(--faint);cursor:pointer}
+.tier-add{background:none;border:1px dashed #CBD5E1;border-radius:7px;padding:8px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer;margin-top:6px}
+.tier-add:hover{border-color:var(--blue);color:var(--blue)}
+.range-row{display:flex;gap:8px;align-items:center}
+.range-input{background:var(--white);border:1px solid #CBD5E1;border-radius:5px;padding:5px 8px;font-size:11px;width:60px;text-align:center}
+.slider-wrap{flex:1}
+.slider{width:100%;accent-color:var(--blue)}
+.day-btns{display:flex;gap:4px;flex-wrap:wrap}
+.day-btn{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:10px;font-weight:500;cursor:pointer;color:var(--muted)}
+.day-btn.on{background:var(--blue-lt);border-color:var(--blue);color:var(--blue)}
+.help-tip{font-size:9px;color:var(--faint);font-style:italic;margin-top:3px}
+
+/* ── Upload ── */
+.dropzone{border:2px dashed #CBD5E1;border-radius:10px;padding:36px 24px;text-align:center;background:var(--white);cursor:pointer;transition:all .15s}
+.dropzone:hover{border-color:var(--blue);background:var(--blue-lt)}
+.dropzone i{font-size:32px;color:var(--faint);display:block;margin-bottom:8px}
+.dropzone-title{font-size:13px;font-weight:600;color:var(--slate);margin-bottom:4px}
+.dropzone-sub{font-size:11px;color:var(--muted)}
+.sheet-pick{display:flex;flex-direction:column;gap:5px;margin-top:12px}
+.sheet-pick-row{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 11px}
+.sheet-pick-row input{accent-color:var(--blue);width:14px;height:14px}
+.sheet-pick-name{flex:1;font-size:12px;font-weight:500}
+.sheet-pick-count{font-size:10px;color:var(--faint)}
+.sheet-pick-persona{font-size:10px;color:var(--muted)}
+
+/* ── Run config ── */
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.mode-card{border:2px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all .12s}
+.mode-card.selected{border-color:var(--blue);background:var(--blue-lt)}
+.mode-card-title{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.mode-card-desc{font-size:10px;color:var(--muted);line-height:1.5}
+.quota-row{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1px solid var(--border);border-radius:7px;padding:9px 12px;margin-bottom:8px}
+.quota-label{font-size:11px;font-weight:500}
+.quota-sub{font-size:10px;color:var(--faint);margin-top:1px}
+.quota-input{background:var(--bg);border:1px solid #CBD5E1;border-radius:5px;padding:4px 8px;font-size:12px;font-weight:600;width:70px;text-align:center}
+.quota-cost{font-size:10px;color:var(--muted)}
+.midnight-ok{font-size:11px;color:var(--green);background:var(--green-lt);border-radius:6px;padding:7px 10px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.run-btn-full{background:var(--blue);color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px}
+.run-btn-full:hover{background:#1D4ED8}
+.sched-note{font-size:10px;color:var(--muted);text-align:center}
+.sched-note a{color:var(--blue);cursor:pointer;text-decoration:none}
+
+/* ── Agent modal ── */
+.ag-overlay{position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.ag-panel{background:#0F172A;border-radius:14px;width:700px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 25px 60px rgba(0,0,0,.5)}
+.ag-header{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ag-title{font-size:13px;font-weight:600;color:#F1F5F9;display:flex;align-items:center;gap:10px}
+.pulse{width:8px;height:8px;border-radius:50%;background:#22C55E;animation:blink 1.2s infinite}
+.ag-close{background:rgba(255,255,255,.08);border:none;color:#64748B;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.ag-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 18px 8px;flex-shrink:0}
+.ag-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;transition:all .3s}
+.ag-card.running{border-color:#3B82F6;background:rgba(59,130,246,.12)}
+.ag-card.done{border-color:#22C55E;background:rgba(34,197,94,.08)}
+.ag-card.waiting{opacity:.45}
+.ag-cname{font-size:10px;font-weight:600;color:#E2E8F0;margin-bottom:2px}
+.ag-cstatus{font-size:10px;color:#475569}
+.ag-cstatus.running{color:#60A5FA}
+.ag-cstatus.done{color:#22C55E}
+.ag-log{flex:1;overflow-y:auto;padding:4px 18px 10px;min-height:200px}
+.log-line{padding:3px 0;font-family:monospace;font-size:10px;color:#475569;line-height:1.5;border-bottom:1px solid rgba(255,255,255,.03);display:flex;gap:8px}
+.log-ts{color:#334155;flex-shrink:0}
+.log-msg{flex:1}
+.log-line.ok .log-msg{color:#86EFAC}
+.log-line.err .log-msg{color:#FCA5A5}
+.log-line.info .log-msg{color:#93C5FD}
+.log-line.head .log-msg{color:#F1F5F9;font-weight:600}
+.log-line.warn .log-msg{color:#FCD34D}
+.ag-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ag-prog-wrap{flex:1}
+.ag-prog-label{font-size:9px;color:#475569;margin-bottom:4px;display:flex;justify-content:space-between}
+.ag-prog-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px}
+.ag-prog-fill{height:100%;border-radius:2px;background:var(--blue);transition:width .4s}
+.ag-done-btn{background:#059669;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;display:none;flex-shrink:0}
+/* ── Tooltips ── */
+#gtip{position:fixed;z-index:9999;background:#1E293B;color:#F1F5F9;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.55;max-width:250px;pointer-events:none;box-shadow:0 4px 18px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);display:none;font-family:var(--font)}
+#gtip.show{display:block}
+[data-tip]{cursor:default}
+button[data-tip],a[data-tip],.mode-card[data-tip],.ni[data-tip]{cursor:pointer}
+/* ── Instruction banners ── */
+.instr{background:linear-gradient(135deg,#EFF6FF 0%,#F0FDF4 100%);border:1px solid #BFDBFE;border-left:4px solid var(--blue);border-radius:8px;padding:11px 14px;margin-bottom:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.instr.warn{background:linear-gradient(135deg,#FFFBEB 0%,#FFF7ED 100%);border-color:#FDE68A;border-left-color:var(--amber)}
+.instr.green{background:linear-gradient(135deg,#F0FDF4 0%,#ECFDF5 100%);border-color:#A7F3D0;border-left-color:var(--green)}
+.instr-body{flex:1}
+.instr-title{font-size:12px;font-weight:600;color:var(--slate);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.instr-text{font-size:11px;color:#334155;line-height:1.6}
+.instr-action{margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.instr-btn{background:var(--blue);color:#fff;border:none;padding:5px 12px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer}
+.instr-btn.ghost{background:var(--white);color:var(--blue);border:1px solid #BFDBFE}
+.instr-dismiss{font-size:10px;color:var(--faint);cursor:pointer;white-space:nowrap;flex-shrink:0;margin-top:2px;padding:2px 6px;border-radius:4px;border:none;background:none}
+.instr-dismiss:hover{color:var(--muted);background:#F1F5F9}
+.instr.hidden{display:none}
+.instr-step{background:var(--blue);color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ═══ SIDEBAR ═══ -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">E</div>
+      <div><div class="logo-text">Lead Enrichment</div><div class="logo-sub">Phase 1 — List Build</div></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-label">Phase 1 — Active</div>
+      <button class="ni active" onclick="sw('dashboard',this)" data-tip="Your command centre. See how many records are ready, what ran last, and whether anything needs your attention."><i class="ti ti-layout-dashboard"></i>Dashboard</button>
+      <button class="ni" onclick="sw('accounts',this)" data-tip="Browse all companies in your database. Sorted by priority — your best targets are always at the top."><i class="ti ti-building"></i>Accounts</button>
+      <button class="ni" onclick="sw('runenrich',this)" data-tip="Start a new enrichment run or review records that need your approval before they're saved."><i class="ti ti-player-play"></i>Run &amp; Review<span class="nbadge">23</span></button>
+      <button class="ni" onclick="sw('upload',this)" data-tip="Upload your existing Excel or CSV contact list. Your original data is stored separately and never overwritten."><i class="ti ti-upload"></i>Import Data</button>
+      <button class="ni" onclick="sw('settings',this)" data-tip="All configuration lives here — API keys, priority tiers, enrichment preferences, and the run schedule."><i class="ti ti-settings"></i>Settings</button>
+
+      <div class="nav-label" style="margin-top:8px">Developer</div>
+      <button class="ni" onclick="sw('buildplan',this)" data-tip="Full audit, architecture decisions, implementation plan and API status for the developer building this product."><i class="ti ti-file-code"></i>Build Plan</button>
+
+      <div class="nav-label" style="margin-top:8px">Coming next</div>
+      <button class="ni locked" data-tip="Phase 2: AI drafts personalised emails for each approved contact. You review and approve before sending via Smartlead."><i class="ti ti-mail"></i>Outreach Engine<span class="phase-tag">Phase 2</span></button>
+      <button class="ni locked" data-tip="Phase 3: Automatically detects buying signals — new travel heads joining, company expansions, competitor complaints — so you reach out at the right moment."><i class="ti ti-radar"></i>Signal Monitor<span class="phase-tag">Phase 3</span></button>
+      <button class="ni locked" data-tip="Phase 4: Detects warm replies and automatically books demo slots in your calendar. The demo itself is always run by you."><i class="ti ti-calendar-event"></i>Demo Booking<span class="phase-tag">Phase 4</span></button>
+      <button class="ni locked" data-tip="Phase 5: Automated follow-up sequences, case study sends, and syncing all activity back to your CRM."><i class="ti ti-refresh"></i>Nurture &amp; CRM<span class="phase-tag">Phase 5</span></button>
+    </nav>
+    <div class="sf">Next run: Tomorrow 9:00am IST<br><span style="color:var(--green)">●</span> All APIs connected</div>
+  </div>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+
+    <!-- ══════════════ DASHBOARD ══════════════ -->
+    <div id="view-dashboard" class="view active">
+      <div class="ph">
+        <div><div class="pt">Dashboard</div><div class="ps">Phase 1 — List build · last updated today 9:02am IST</div></div>
+        <button class="pbtn" onclick="sw('runenrich',document.querySelector('.ni:nth-child(3)'))" data-tip="Begins a new enrichment run. Three agents will work in sequence — fetching accounts, querying data sources, and verifying emails."><i class="ti ti-player-play"></i>Start enrichment run</button>
+      </div>
+      <div class="ct">
+
+        <!-- Instruction banner -->
+        <div class="instr" id="instr-dashboard">
+          <div class="instr-body">
+            <div class="instr-title"><span class="instr-step">1</span>Welcome — here's how to use this screen</div>
+            <div class="instr-text">This is your <b>command centre</b>. It tells you the state of your database at a glance — how many accounts are enriched, how many need your review, and how many credits are left.<br>Your most important action right now is reviewing the records waiting for your approval. That takes about 5 minutes.</div>
+            <div class="instr-action">
+              <button class="instr-btn" onclick="sw('runenrich',document.querySelectorAll('.ni')[2])">Go to Review Queue →</button>
+              <button class="instr-btn ghost" onclick="sw('runenrich',document.querySelectorAll('.ni')[2])">Or start a new run</button>
+            </div>
+          </div>
+          <button class="instr-dismiss" onclick="dismissInstr('instr-dashboard')">Got it, don't show again ×</button>
+        </div>
+
+        <!-- Review needed banner -->
+        <div style="background:var(--amber-lt);border:1px solid rgba(217,119,6,.3);border-radius:7px;padding:9px 13px;margin-bottom:12px;font-size:11px;color:#92400E;display:flex;align-items:center;justify-content:space-between" data-tip="These records were found during the last run but need a quick check. Either the match confidence was below your 85% threshold, or the email couldn't be confirmed by Snov.io.">
+          <span><i class="ti ti-alert-triangle" style="font-size:13px;margin-right:5px"></i><b>23 records need your review</b> — below match confidence or unconfirmed email</span>
+          <button class="pbtn amber" style="padding:4px 10px;font-size:10px" onclick="sw('runenrich',document.querySelector('.ni:nth-child(3)'))" data-tip="Go to the Review Queue to approve or skip these records.">Go to Review Queue →</button>
+        </div>
+
+        <!-- Pipeline flow -->
+        <div class="divlabel">How your data flows</div>
+        <div class="pipeline">
+          <div class="pipe-box src" data-tip="Your original Excel database is uploaded here. The raw data is locked and never overwritten — all enriched data lives separately."><div class="pipe-title" style="color:var(--blue)">Import</div><div class="pipe-sub">Excel / sheets<br>~10,800 contacts</div></div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-box mid" data-tip="Agents search Apollo, Snov.io, and Proxycurl to find the current person in each target role at each company. Runs automatically on schedule or when you press Start."><div class="pipe-title" style="color:var(--amber)">Enrich</div><div class="pipe-sub">Apollo → Snov.io<br>→ Proxycurl</div></div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-box mid" data-tip="High-confidence matches are approved automatically. You only manually check records the system is uncertain about — typically fewer than 20 per 200-record run."><div class="pipe-title" style="color:var(--amber)">Review</div><div class="pipe-sub">Sales leader<br>approves</div></div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-box end" data-tip="Contacts you have confirmed as correct. These are your clean, verified leads — ready for export or to pass into Phase 2 outreach."><div class="pipe-title" style="color:var(--green)">Approved</div><div class="pipe-sub">Clean list<br>ready to use</div></div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-box" style="border-style:dashed;opacity:.6" data-tip="Phase 2 (coming next): AI drafts personalised emails for each approved contact. You review and approve before any email is sent."><div class="pipe-title">Outreach</div><div class="pipe-sub">Phase 2<br>coming next</div></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="sg4">
+          <div class="card" data-tip="All companies in your database — consolidated and deduplicated across all imported sheets. One row per company."><div class="sl" style="color:var(--blue)"><i class="ti ti-database"></i>Total accounts</div><div class="sv">3,840</div><div class="sd">consolidated, deduplicated</div></div>
+          <div class="card" data-tip="Accounts that haven't been through an enrichment run yet. These will be processed in upcoming runs, starting with your highest priority tier."><div class="sl"><i class="ti ti-clock"></i>Not yet enriched</div><div class="sv">3,202</div><div class="sd">awaiting next run</div></div>
+          <div class="card" data-tip="Records that were found in the last run but need a quick check before being saved. Either the match was below your confidence threshold or the email couldn't be confirmed."><div class="sl" style="color:var(--amber)"><i class="ti ti-eye"></i>Awaiting review</div><div class="sv">23</div><div class="sd">↑ from today's run</div></div>
+          <div class="card" data-tip="Contacts you have confirmed as correct. These are your clean, verified leads — ready for outreach or export."><div class="sl" style="color:var(--green)"><i class="ti ti-circle-check"></i>Approved</div><div class="sv">615</div><div class="sd">ready for outreach</div></div>
+        </div>
+
+        <!-- Quota + last run -->
+        <div style="display:grid;grid-template-columns:1fr 280px;gap:12px">
+          <div>
+            <div class="divlabel">API credits remaining</div>
+            <div class="qg">
+              <div class="qc" data-tip="Apollo.io credits are used to find contacts and companies. Each account lookup uses 1 credit. You have 850 remaining — enough for ~850 more accounts before your plan resets on Jul 1.">
+                <div class="ql"><i class="ti ti-bolt" style="font-size:11px"></i>Apollo.io</div>
+                <div class="qv" style="color:var(--green)">850</div>
+                <div class="qbar"><div class="qfill" style="width:85%;background:#22C55E"></div></div>
+                <div class="qs">850 / 1,000 · resets Jul 1</div>
+              </div>
+              <div class="qc" data-tip="Proxycurl credits are used to fetch LinkedIn profile data when Apollo can't find a contact. Pay-per-use at ~$0.03 per lookup. 472 lookups remaining.">
+                <div class="ql"><i class="ti ti-brand-linkedin" style="font-size:11px"></i>Proxycurl</div>
+                <div class="qv" style="color:var(--green)">472</div>
+                <div class="qbar"><div class="qfill" style="width:94%;background:#22C55E"></div></div>
+                <div class="qs">472 / 500 · pay-per-use</div>
+              </div>
+              <div class="qc" data-tip="⚠ ZeroBounce credits are running low. These are used to verify whether email addresses are real before you send. At current pace this may not last the week — consider topping up in Settings.">
+                <div class="ql"><i class="ti ti-mail-check" style="font-size:11px"></i>ZeroBounce</div>
+                <div class="qv" style="color:var(--amber)">210</div>
+                <div class="qbar"><div class="qfill" style="width:42%;background:var(--amber)"></div></div>
+                <div class="qs">210 / 500 · resets Jul 1 ⚠</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="divlabel">Last run</div>
+            <div class="card" style="font-size:11px">
+              <div style="font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:8px">Run #13 · Today 9:02am IST</div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--muted)">Mode</span><span style="font-weight:500">Fill gaps</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--muted)">Processed</span><span style="font-weight:500">75 accounts</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--muted)">Auto-approved</span><span style="font-weight:500;color:var(--green)">52</span></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--muted)">Need review</span><span style="font-weight:500;color:var(--amber)">23</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">No match</span><span style="font-weight:500;color:var(--red)">0</span></div>
+              <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:10px;color:var(--faint)">Triggered by: scheduled run<br>Next run: Tomorrow 9:00am IST · <span style="color:var(--blue);cursor:pointer" onclick="sw('settings',document.querySelector('.ni:nth-child(6)'))">Edit in Settings</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ ACCOUNTS ══════════════ -->
+    <div id="view-accounts" class="view">
+      <div class="ph"><div><div class="pt">Accounts</div><div class="ps">3,840 companies · sorted by priority</div></div>
+        <button class="pbtn ghost" style="font-size:11px" data-tip="Download all accounts and their enriched contact data as a spreadsheet. Original columns and enriched columns are included on the same row."><i class="ti ti-download"></i>Export CSV</button>
+      </div>
+      <div class="ct" style="padding-bottom:0;padding-top:14px">
+        <div class="instr" id="instr-accounts">
+          <div class="instr-body">
+            <div class="instr-title"><span class="instr-step">2</span>This is your full account database</div>
+            <div class="instr-text">Every company is listed here, one row per company. Your <b>P0 — Core ICP</b> accounts (Pharma, Insurance, Banking) always appear at the top — these get enriched first.<br>Click any row to see the contacts found at that company and the full source trail showing exactly where the data came from. Use the filters to narrow down by priority, vertical, or enrichment status.</div>
+            <div class="instr-action">
+              <button class="instr-btn" onclick="toggleExpand('e1')">Click Cipla Ltd to see an example →</button>
+            </div>
+          </div>
+          <button class="instr-dismiss" onclick="dismissInstr('instr-accounts')">Got it, don't show again ×</button>
+        </div>
+      </div>
+      <div class="fbar" style="padding:10px 22px 0">
+        <select class="fsel"><option>All priorities</option><option>P0 — Core ICP</option><option>P1 — Strong fit</option><option>P2 — Opportunistic</option><option>Inactive</option></select>
+        <select class="fsel"><option>All verticals</option><option>Pharma</option><option>Insurance</option><option>Banking</option><option>Manufacturing</option><option>IT / ITES</option></select>
+        <select class="fsel"><option>All enrichment statuses</option><option>Not yet enriched</option><option>Awaiting review</option><option>Approved</option><option>No match found</option></select>
+        <select class="fsel"><option>All cities</option><option>Mumbai</option><option>Delhi / NCR</option><option>Bengaluru</option><option>Hyderabad</option></select>
+        <input class="sinp" placeholder="Search company or contact…" />
+      </div>
+      <div class="ct" style="padding-top:10px">
+        <div class="panel">
+          <table class="tbl">
+            <thead><tr><th>Company</th><th>Priority</th><th>Vertical</th><th>City</th><th>Contacts found</th><th>Enrichment Status</th><th>Last enriched</th></tr></thead>
+            <tbody>
+              <tr onclick="toggleExpand('e1')">
+                <td class="cc">Cipla Ltd</td><td><span class="b b-p1">P0 — Core ICP</span></td><td>Pharma</td><td>Mumbai</td><td>2</td>
+                <td><span class="sdot s-approved"><span class="dot"></span>Approved</span></td><td>Today 9:02am</td>
+              </tr>
+              <tr id="e1" style="display:none"><td colspan="7" style="padding:0">
+                <div class="review-expand">
+                  <div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Contacts at Cipla Ltd</div>
+                  <table class="tbl" style="margin-bottom:10px"><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>Email Status</th><th>Source</th></tr></thead>
+                  <tbody>
+                    <tr><td class="cc">Suresh Nair</td><td>Head – Admin &amp; Travel</td><td>suresh.nair@cipla.com</td><td><span style="color:var(--green);font-size:10px">✅ Confirmed</span></td><td><span style="font-size:10px;color:var(--muted)">Apollo (91%)</span></td></tr>
+                    <tr><td class="cc">Arvind Shah</td><td>CFO</td><td>a.shah@cipla.com</td><td><span style="color:var(--green);font-size:10px">✅ Confirmed</span></td><td><span style="font-size:10px;color:var(--muted)">Apollo (88%)</span></td></tr>
+                  </tbody></table>
+                  <div class="trail"><b>Source trail:</b> Found on Apollo · Email confirmed via Snov.io · LinkedIn via Proxycurl</div>
+                  <div style="font-size:10px;color:var(--faint)">Activity: Imported Jun 8 · Enriched Run #13 · Approved by Sales Leader</div>
+                </div>
+              </td></tr>
+              <tr onclick="toggleExpand('e2')">
+                <td class="cc">HDFC Life Insurance</td><td><span class="b b-p1">P0 — Core ICP</span></td><td>Insurance</td><td>Mumbai</td><td>1</td>
+                <td><span class="sdot s-await"><span class="dot"></span>Awaiting review</span></td><td>Today 9:02am</td>
+              </tr>
+              <tr id="e2" style="display:none"><td colspan="7" style="padding:0">
+                <div class="review-expand">
+                  <div class="trail"><b>Source trail:</b> Found on Apollo (72% match) · Email unconfirmed (catch-all domain) · LinkedIn via Proxycurl</div>
+                  <div style="font-size:10px;color:var(--amber)">⚠ Below 85% match threshold — go to Review Queue to approve or skip</div>
+                </div>
+              </td></tr>
+              <tr>
+                <td class="cc">Sun Pharmaceutical</td><td><span class="b b-p1">P0 — Core ICP</span></td><td>Pharma</td><td>Mumbai</td><td>2</td>
+                <td><span class="sdot s-approved"><span class="dot"></span>Approved</span></td><td>Yesterday</td>
+              </tr>
+              <tr>
+                <td class="cc">Lupin Ltd</td><td><span class="b b-p1">P0 — Core ICP</span></td><td>Pharma</td><td>Mumbai</td><td>0</td>
+                <td><span class="sdot s-none"><span class="dot"></span>Not yet enriched</span></td><td>—</td>
+              </tr>
+              <tr>
+                <td class="cc">Infosys BPM</td><td><span class="b b-p2">P1 — Strong fit</span></td><td>IT / ITES</td><td>Bengaluru</td><td>1</td>
+                <td><span class="sdot s-approved"><span class="dot"></span>Approved</span></td><td>3 days ago</td>
+              </tr>
+              <tr>
+                <td class="cc">Tata Chemicals</td><td><span class="b b-p2">P1 — Strong fit</span></td><td>Manufacturing</td><td>Mumbai</td><td>0</td>
+                <td><span class="sdot s-nomatch"><span class="dot"></span>No match found</span></td><td>Today 9:02am</td>
+              </tr>
+              <tr>
+                <td class="cc" style="opacity:.5">Deloitte India</td>
+                <td><span class="b b-inactive">Inactive</span></td>
+                <td style="opacity:.5">Consulting</td><td style="opacity:.5">Mumbai</td><td style="opacity:.5">—</td>
+                <td><span style="font-size:10px;color:var(--faint)">Not targeted</span></td><td style="opacity:.5">—</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--faint)">
+            <span>Showing 1–7 of 3,840</span>
+            <div style="display:flex;gap:5px">
+              <button class="pbtn ghost" style="padding:3px 9px;font-size:10px">← Prev</button>
+              <button class="pbtn ghost" style="padding:3px 9px;font-size:10px">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ RUN & REVIEW ══════════════ -->
+    <div id="view-runenrich" class="view">
+      <div class="ph"><div><div class="pt">Run &amp; Review</div><div class="ps">Configure enrichment runs · review results</div></div></div>
+      <div class="ct">
+        <div class="instr" id="instr-runenrich">
+          <div class="instr-body">
+            <div class="instr-title"><span class="instr-step">3</span>Two things happen here — running and reviewing</div>
+            <div class="instr-text"><b>Configure &amp; Run tab:</b> Set how many accounts to enrich today, pick a mode, and press Start. Three agents run automatically — you don't need to do anything while it's running.<br><b>Review Queue tab:</b> After a run, check the records the system wasn't fully confident about. High-confidence matches are already approved for you. You only handle the uncertain ones — usually fewer than 20 per run.</div>
+            <div class="instr-action">
+              <button class="instr-btn" onclick="swTab('runtab','review',document.querySelectorAll('.tab')[1])">See the Review Queue →</button>
+              <button class="instr-btn ghost" onclick="runAgent()">Watch a live run demo</button>
+            </div>
+          </div>
+          <button class="instr-dismiss" onclick="dismissInstr('instr-runenrich')">Got it, don't show again ×</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="swTab('runtab','run',this)">Configure &amp; Run</button>
+          <button class="tab" onclick="swTab('runtab','review',this)">Review Queue <span style="background:var(--amber);color:#fff;border-radius:999px;font-size:9px;font-weight:700;padding:1px 5px;margin-left:3px">23</span></button>
+        </div>
+
+        <!-- Configure & Run -->
+        <div id="runtab-run" class="tab-content active">
+          <div class="mode-cards">
+            <div class="mode-card selected" onclick="this.parentNode.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')" data-tip="Only looks up contacts who are missing an email or phone number. Recommended for regular daily runs — uses fewer credits and focuses effort where data is actually missing.">
+              <div class="mode-card-title"><i class="ti ti-filter" style="font-size:14px;color:var(--blue)"></i>Fill gaps</div>
+              <div class="mode-card-desc">Look up contacts missing an email or phone number. Recommended. Uses fewer credits.</div>
+            </div>
+            <div class="mode-card" onclick="this.parentNode.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')" data-tip="Re-queries every record, even those that already have data. Use this quarterly to catch people who have changed roles since your last run. More credit-intensive.">
+              <div class="mode-card-title"><i class="ti ti-refresh" style="font-size:14px;color:var(--muted)"></i>Re-check all</div>
+              <div class="mode-card-desc">Re-query every record, even ones with existing data. Use quarterly to catch role changes.</div>
+            </div>
+          </div>
+          <div class="quota-row" data-tip="How many accounts to process in today's run. Cannot exceed your daily Apollo credit limit of 850. Each account = 1 Apollo credit.">
+            <div><div class="quota-label">Accounts to process today</div><div class="quota-sub help-tip">Apollo credits available: 850</div></div>
+            <div style="display:flex;align-items:center;gap:8px"><input class="quota-input" value="50" type="number" /><span class="quota-cost">= 50 Apollo credits</span></div>
+          </div>
+          <div class="quota-row" data-tip="For each account processed, also look up the individual contact (person) for this percentage. Higher percentage = more contacts found but more Proxycurl credits used.">
+            <div><div class="quota-label">Also look up contacts for</div><div class="quota-sub help-tip">Percentage of accounts to also enrich at contact level</div></div>
+            <div style="display:flex;align-items:center;gap:8px"><input class="quota-input" value="60" type="number" /><span class="quota-cost">% → ~30 Proxycurl</span></div>
+          </div>
+          <div class="quota-row" data-tip="Choose which priority tier to process first. P0 = your Core ICP (Pharma, Insurance, Banking). Accounts in the top tier are always enriched before lower tiers.">
+            <div><div class="quota-label">Priority filter</div><div class="quota-sub help-tip">Which accounts to process first</div></div>
+            <select class="fsel" style="font-size:11px">
+              <option>P0 — Core ICP first</option><option>P0 + P1</option><option>All priorities</option>
+            </select>
+          </div>
+          <div class="midnight-ok" data-tip="The system checks whether this run can complete before midnight in your timezone (IST). If it can't, it will warn you and block the start — preventing a run from being split across two days."><i class="ti ti-circle-check" style="font-size:14px"></i>Run will complete at ~10:45am IST. Safe to start.</div>
+          <div style="background:#F1F5F9;border-radius:6px;padding:8px 11px;margin-bottom:10px;font-size:10px;color:#475569;line-height:1.7">
+            Estimated: <b>50 Apollo</b> · <b>30 Proxycurl</b> · <b>50 ZeroBounce</b> credits<br>
+            Remaining after run: <b>800 Apollo</b> · <b>442 Proxycurl</b> · <b>160 ZeroBounce</b>
+          </div>
+          <button class="run-btn-full" onclick="runAgent()" data-tip="Starts the enrichment run now. Three agents work in sequence: Agent 1 fetches accounts, Agent 2 queries Apollo and Proxycurl, Agent 3 verifies emails via Snov.io. You'll be notified when it's done."><i class="ti ti-player-play"></i>Start enrichment run</button>
+          <div class="sched-note">Scheduled: Weekdays 9:00am IST · <a onclick="sw('settings',document.querySelector('.ni:nth-child(6)'));setTimeout(()=>{swApiTab2('sched',document.querySelector('.api-tab:last-child'))},100)">Edit in Settings</a></div>
+        </div>
+
+        <!-- Review Queue -->
+        <div id="runtab-review" class="tab-content">
+          <div style="background:var(--green-lt);border:1px solid rgba(5,150,105,.25);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:#065F46;display:flex;align-items:center;justify-content:space-between">
+            <span><i class="ti ti-circle-check" style="font-size:13px;margin-right:5px"></i><b>52 records were auto-approved</b> (≥85% match confidence, email confirmed)</span>
+            <span style="color:var(--green);font-size:10px;cursor:pointer">View in Accounts →</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="fbar" style="margin-bottom:0">
+              <select class="fsel"><option>All issues</option><option>Below threshold</option><option>Unconfirmed email</option></select>
+            </div>
+            <button class="pbtn amber" style="font-size:11px" data-tip="Approves all records that are above your 85% match confidence threshold AND have a confirmed email. You only manually review the uncertain ones. Saves time when you trust the bulk of results."><i class="ti ti-checks"></i>Approve all strong matches</button>
+          </div>
+          <div class="panel">
+            <table class="tbl">
+              <thead><tr><th>Company</th><th>Role</th><th>Original</th><th>Found today</th><th>Confidence</th><th>Email</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr onclick="toggleExpand('r1')">
+                  <td class="cc">HDFC Life Insurance</td><td>Head of Admin</td>
+                  <td style="color:var(--faint);font-style:italic">None on record</td>
+                  <td><b>Meera Krishnan</b><br><span style="color:var(--faint);font-size:9px">m.krishnan@hdfclife.com</span></td>
+                  <td><div style="display:flex;align-items:center;gap:5px"><div class="conf-bar"><div class="conf-fill" style="width:72%;background:var(--amber)"></div></div><span style="color:var(--amber);font-weight:600;font-size:10px">72%</span></div></td>
+                  <td><span style="color:var(--amber);font-size:10px">⚠ Unconfirmed</span></td>
+                  <td><button class="pbtn ghost" style="padding:3px 8px;font-size:10px">Review ▾</button></td>
+                </tr>
+                <tr id="r1" style="display:none"><td colspan="7" style="padding:0">
+                  <div class="review-expand">
+                    <div class="re-cols">
+                      <div class="re-col"><div class="re-col-label">Original</div>
+                        <div class="re-field"><div class="re-field-label">Name</div><div class="re-field-val" style="color:var(--faint)">None on record</div></div>
+                        <div class="re-field"><div class="re-field-label">Role</div><div class="re-field-val" style="color:var(--faint)">—</div></div>
+                        <div class="re-field"><div class="re-field-label">Email</div><div class="re-field-val" style="color:var(--faint)">—</div></div>
+                      </div>
+                      <div class="re-col"><div class="re-col-label">Found today</div>
+                        <div class="re-field"><div class="re-field-label">Name</div><div class="re-field-val found">Meera Krishnan</div></div>
+                        <div class="re-field"><div class="re-field-label">Role</div><div class="re-field-val found">Head of Administration</div></div>
+                        <div class="re-field"><div class="re-field-label">Email</div><div class="re-field-val found">m.krishnan@hdfclife.com</div></div>
+                        <div class="re-field"><div class="re-field-label">LinkedIn</div><div class="re-field-val found">linkedin.com/in/meera-k</div></div>
+                      </div>
+                    </div>
+                    <div class="trail">
+                      <b>Match confidence:</b> 72% — below your 85% threshold<br>
+                      <b>Email status:</b> Unconfirmed — HDFC Life's email server accepts all addresses. Cannot confirm without sending.<br>
+                      <b>Source trail:</b> Found on Apollo · Email unverifiable (catch-all domain) · LinkedIn confirmed via Proxycurl
+                    </div>
+                    <div class="re-actions">
+                      <button class="btn-nomatch" data-tip="The system found the wrong person. Clears this result — the account will be retried automatically in the next run.">Mark as no match</button>
+                      <button class="btn-skip" data-tip="Leave this in the queue to review later. Nothing is saved or discarded yet.">Skip</button>
+                      <button class="btn-edit" data-tip="Make a correction before saving — fix a name spelling, update an email, or adjust the role title. Then approve.">Edit &amp; Approve</button>
+                      <button class="btn-approve" data-tip="Save this enriched data as confirmed. The original record is preserved separately and never overwritten.">✓ Approve</button>
+                    </div>
+                  </div>
+                </td></tr>
+                <tr onclick="toggleExpand('r2')">
+                  <td class="cc">Lupin Ltd</td><td>Head of Travel</td>
+                  <td><span style="font-size:10px">Rajesh Kumar<br><span style="color:var(--faint)">r.kumar@lupin.com (stale)</span></span></td>
+                  <td><b>Suresh Rao</b><br><span style="color:var(--faint);font-size:9px">s.rao@lupin.com</span></td>
+                  <td><div style="display:flex;align-items:center;gap:5px"><div class="conf-bar"><div class="conf-fill" style="width:68%;background:var(--amber)"></div></div><span style="color:var(--amber);font-weight:600;font-size:10px">68%</span></div></td>
+                  <td><span style="color:var(--green);font-size:10px">✅ Confirmed</span></td>
+                  <td><button class="pbtn ghost" style="padding:3px 8px;font-size:10px">Review ▾</button></td>
+                </tr>
+                <tr id="r2" style="display:none"><td colspan="7" style="padding:0">
+                  <div class="review-expand">
+                    <div class="re-cols">
+                      <div class="re-col"><div class="re-col-label">Original</div>
+                        <div class="re-field"><div class="re-field-label">Name</div><div class="re-field-val">Rajesh Kumar</div></div>
+                        <div class="re-field"><div class="re-field-label">Role</div><div class="re-field-val">Corp Admin Manager</div></div>
+                        <div class="re-field"><div class="re-field-label">Email</div><div class="re-field-val" style="color:var(--red)">r.kumar@lupin.com <span style="font-size:9px">(will bounce)</span></div></div>
+                      </div>
+                      <div class="re-col"><div class="re-col-label">Found today</div>
+                        <div class="re-field"><div class="re-field-label">Name</div><div class="re-field-val found">Suresh Rao</div></div>
+                        <div class="re-field"><div class="re-field-label">Role</div><div class="re-field-val found">Head of Travel</div></div>
+                        <div class="re-field"><div class="re-field-label">Email</div><div class="re-field-val found">s.rao@lupin.com ✅</div></div>
+                      </div>
+                    </div>
+                    <div class="trail"><b>Source trail:</b> Found on Apollo (68% match) · Email confirmed via Snov.io · LinkedIn via Proxycurl</div>
+                    <div class="re-actions">
+                      <button class="btn-nomatch" data-tip="The system found the wrong person. Clears this result — the account will be retried automatically in the next run.">Mark as no match</button>
+                      <button class="btn-skip" data-tip="Leave this in the queue to review later. Nothing is saved or discarded yet.">Skip</button>
+                      <button class="btn-edit" data-tip="Make a correction before saving — fix a name spelling, update an email, or adjust the role title. Then approve.">Edit &amp; Approve</button>
+                      <button class="btn-approve" data-tip="Save this enriched data as confirmed. The original record is preserved separately and never overwritten.">✓ Approve</button>
+                    </div>
+                  </div>
+                </td></tr>
+              </tbody>
+            </table>
+            <div style="padding:8px 12px;border-top:1px solid var(--border);font-size:10px;color:var(--faint)">Showing 2 of 23 records needing review · sorted by lowest confidence first</div>
+          </div>
+
+          <!-- New contacts found -->
+          <div style="margin-top:14px">
+            <div class="divlabel">New contacts found at existing accounts</div>
+            <div class="panel">
+              <div style="padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)">Apollo found 3 people not previously in your database. Add them?</div>
+              <table class="tbl">
+                <thead><tr><th>Company</th><th>Name found</th><th>Role</th><th>Email</th><th></th></tr></thead>
+                <tbody>
+                  <tr><td class="cc">ICICI Bank</td><td>Rajiv Sharma</td><td>Head of Corporate Travel</td><td style="color:var(--green);font-size:10px">✅ Confirmed</td><td><div style="display:flex;gap:5px"><button class="btn-approve" style="padding:3px 8px">Add</button><button class="btn-skip" style="padding:3px 8px">Ignore</button></div></td></tr>
+                  <tr><td class="cc">Sun Pharma</td><td>Deepa Nair</td><td>VP Administration</td><td style="color:var(--green);font-size:10px">✅ Confirmed</td><td><div style="display:flex;gap:5px"><button class="btn-approve" style="padding:3px 8px">Add</button><button class="btn-skip" style="padding:3px 8px">Ignore</button></div></td></tr>
+                </tbody>
+              </table>
+              <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:6px"><button class="btn-approve">Add all 2</button><button class="btn-skip">Ignore all</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ IMPORT DATA ══════════════ -->
+    <div id="view-upload" class="view">
+      <div class="ph"><div><div class="pt">Import Data</div><div class="ps">Upload your contact database — original data is never overwritten</div></div></div>
+      <div class="ct">
+        <div class="instr warn" id="instr-upload">
+          <div class="instr-body">
+            <div class="instr-title"><span class="instr-step" style="background:var(--amber)">4</span>Import your contact database — do this once</div>
+            <div class="instr-text">Upload your existing Excel or CSV file here. The system will detect each sheet automatically and let you choose which ones to include.<br><b>Important:</b> your original file is never changed. All enriched data is stored separately. Once you confirm the import, the file is locked — this prevents accidental overwrites later.</div>
+            <div class="instr-action">
+              <button class="instr-btn" style="background:var(--amber)" onclick="document.getElementById('fakeupload').click()">Upload your Excel file →</button>
+            </div>
+          </div>
+          <button class="instr-dismiss" onclick="dismissInstr('instr-upload')">Got it, don't show again ×</button>
+        </div>
+        <div style="max-width:680px">
+          <div class="dropzone" onclick="document.getElementById('fakeupload').click()">
+            <i class="ti ti-file-spreadsheet"></i>
+            <div class="dropzone-title">Drop your Excel file here, or click to browse</div>
+            <div class="dropzone-sub">Supports .xlsx and .csv · All sheets detected automatically</div>
+            <input type="file" id="fakeupload" style="display:none" />
+          </div>
+
+          <div style="margin-top:16px">
+            <div class="divlabel">Select sheets to import</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Tick the sheets you want to include. The system auto-detects the persona for each sheet.</div>
+            <div class="sheet-pick">
+              <div class="sheet-pick-row"><input type="checkbox" checked /><span class="sheet-pick-name">Admin</span><span class="sheet-pick-count">5,389 rows</span><span class="sheet-pick-persona">Head of Travel / Admin Head</span></div>
+              <div class="sheet-pick-row"><input type="checkbox" checked /><span class="sheet-pick-name">CFO</span><span class="sheet-pick-count">1,200 rows</span><span class="sheet-pick-persona">CFO / Finance Head</span></div>
+              <div class="sheet-pick-row"><input type="checkbox" /><span class="sheet-pick-name">HR</span><span class="sheet-pick-count">846 rows</span><span class="sheet-pick-persona">HR Head</span></div>
+              <div class="sheet-pick-row"><input type="checkbox" /><span class="sheet-pick-name">MICE</span><span class="sheet-pick-count">58 rows</span><span class="sheet-pick-persona">Events / MICE Head</span></div>
+              <div class="sheet-pick-row"><input type="checkbox" /><span class="sheet-pick-name">Master</span><span class="sheet-pick-count">2,385 rows</span><span class="sheet-pick-persona">Mixed company reference</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;background:var(--amber-lt);border:1px solid rgba(217,119,6,.3);border-radius:7px;padding:10px 13px;font-size:11px;color:#92400E">
+            <b>Important:</b> Once you confirm this import, the file is locked. Your original data is stored separately and never overwritten. Re-importing requires a manual reset.
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="pbtn"><i class="ti ti-upload"></i>Confirm import — 6,589 contacts</button>
+            <button class="pbtn ghost">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SETTINGS ══════════════ -->
+    <div id="view-settings" class="view">
+      <div class="ph"><div><div class="pt">Settings</div><div class="ps">All configuration lives here — one source of truth</div></div></div>
+      <div class="ct">
+        <div class="instr warn" id="instr-settings">
+          <div class="instr-body">
+            <div class="instr-title"><span class="instr-step" style="background:var(--amber)">!</span>Set this up before your first enrichment run</div>
+            <div class="instr-text">There are two things you must do here before anything will work:<br>
+            <b>1. Connect Apollo.io</b> — go to API Sources → paste your API key → press Test connection.<br>
+            <b>2. Check your priority tiers</b> — go to Target Config → confirm your P0 industries are the right ones (Pharma, Insurance, Banking by default).<br>
+            Everything else has sensible defaults — you can change it later.</div>
+            <div class="instr-action">
+              <button class="instr-btn" style="background:var(--amber)" onclick="swApiTab2('api',document.querySelectorAll('#settabs .api-tab')[0])">Connect Apollo first →</button>
+              <button class="instr-btn ghost" style="border-color:#FDE68A;color:#92400E" onclick="swApiTab2('targets',document.querySelectorAll('#settabs .api-tab')[1])">Then check priority tiers</button>
+            </div>
+          </div>
+          <button class="instr-dismiss" onclick="dismissInstr('instr-settings')">Got it, don't show again ×</button>
+        </div>
+        <div class="api-tabs" id="settabs">
+          <button class="api-tab active" onclick="swApiTab2('api',this)" data-tip="Connect and manage your data sources — Apollo, Snov.io, Proxycurl. Paste your API keys here and test the connection."><i class="ti ti-plug" style="font-size:12px"></i>API Sources</button>
+          <button class="api-tab" onclick="swApiTab2('targets',this)" data-tip="Define which company types and job titles to target. Set your priority tiers — these control which accounts get enriched first."><i class="ti ti-target" style="font-size:12px"></i>Target Config</button>
+          <button class="api-tab" onclick="swApiTab2('prefs',this)" data-tip="Configure how the enrichment engine behaves — match confidence threshold, pause between lookups, email type, daily limit, and timezone."><i class="ti ti-adjustments" style="font-size:12px"></i>Enrichment Prefs</button>
+          <button class="api-tab" onclick="swApiTab2('sched',this)" data-tip="The only place to set your automatic run schedule. Toggle on/off, pick the time and days. All other screens show this as read-only."><i class="ti ti-clock" style="font-size:12px"></i>Schedule</button>
+          <button class="api-tab" onclick="swApiTab2('profile',this)" data-tip="Your name and notification email. Run summaries are sent here when a run completes. Each team member has their own."><i class="ti ti-user" style="font-size:12px"></i>Account Profile</button>
+          <button class="api-tab" onclick="swApiTab2('team',this)" data-tip="Coming soon: invite team members, set per-user credit limits, and assign roles (Owner / Editor / Viewer)."><i class="ti ti-users" style="font-size:12px"></i>Team</button>
+        </div>
+
+        <!-- API Sources -->
+        <div id="settab-api" class="api-tab-pane active">
+          <div class="api-tabs" id="apisrctabs" style="background:none;padding:0;gap:4px;margin-bottom:12px">
+            <button class="api-tab active" style="border:1px solid var(--border);background:var(--white)" onclick="swApiTab3('apollo',this)">Apollo.io <span style="color:var(--green);font-size:9px">✓</span></button>
+            <button class="api-tab" style="border:1px solid var(--border);background:var(--white)" onclick="swApiTab3('snov',this)">Snov.io <span style="color:var(--faint);font-size:9px">○</span></button>
+            <button class="api-tab" style="border:1px solid var(--border);background:var(--white)" onclick="swApiTab3('proxycurl',this)">Proxycurl <span style="color:var(--faint);font-size:9px">○</span></button>
+            <button class="api-tab" style="border:1px dashed #CBD5E1;color:var(--faint)" onclick="swApiTab3('addapi',this)">+ Add API</button>
+          </div>
+          <div id="apisrc-apollo" class="api-tab-pane active">
+            <div class="srow"><div class="srow-top"><div class="srow-name"><i class="ti ti-bolt" style="color:var(--green)"></i>Apollo.io — Primary enrichment</div><span class="b b-p1">✓ Connected</span></div>
+              <div class="srow-desc">People search, company search, contact enrichment, email finder. Powers all enrichment runs.</div>
+              <div class="fl">API key</div><input class="fi" type="password" value="ap_**********************" />
+              <div style="display:flex;align-items:center;gap:10px"><button class="tbtn">Test connection ✓</button><span style="font-size:10px;color:var(--faint)">Plan limit: <input style="width:50px;background:var(--white);border:1px solid #CBD5E1;padding:1px 5px;border-radius:3px;font-size:10px" value="1000" /> credits/month · ~$99/mo · Resets Jul 1</span></div>
+              <div class="srow-note note-info">Used for: all enrichment runs, ICP filtering, contact lookup</div>
+            </div>
+          </div>
+          <div id="apisrc-snov" class="api-tab-pane">
+            <div class="srow"><div class="srow-top"><div class="srow-name"><i class="ti ti-at" style="color:var(--amber)"></i>Snov.io — Email verification &amp; fallback</div><span class="b b-amber">Not configured</span></div>
+              <div class="srow-desc">Silently checks whether found emails are deliverable. Also finds emails via domain + name pattern when Apollo has no result.</div>
+              <div class="fl">Client ID</div><input class="fi" type="text" placeholder="Enter Snov.io Client ID" />
+              <div class="fl">Client Secret</div><input class="fi" type="password" placeholder="Enter Snov.io Client Secret" />
+              <button class="tbtn" style="color:var(--muted)">Test connection</button>
+              <div class="srow-note note-warn">Fallback only — runs after Apollo. If not configured, emails are not verified before approval.</div>
+            </div>
+          </div>
+          <div id="apisrc-proxycurl" class="api-tab-pane">
+            <div class="srow"><div class="srow-top"><div class="srow-name"><i class="ti ti-brand-linkedin" style="color:#6366F1"></i>Proxycurl — LinkedIn data</div><span class="b b-amber">Not configured</span></div>
+              <div class="srow-desc">Fetches current LinkedIn profile data — job title, company, tenure — when Apollo cannot find a contact. Pay-per-use (~$0.03/lookup).</div>
+              <div class="fl">API key</div><input class="fi" type="password" placeholder="Enter Proxycurl API key" />
+              <button class="tbtn" style="color:var(--muted)">Test connection</button>
+              <div class="srow-note note-info">Note: LinkedIn Sales Navigator has no public API. Proxycurl provides equivalent data at $0.03 per profile.</div>
+            </div>
+          </div>
+          <div id="apisrc-addapi" class="api-tab-pane">
+            <div style="border:2px dashed #CBD5E1;border-radius:8px;padding:24px;text-align:center;font-size:11px;color:var(--faint)">
+              <i class="ti ti-plug" style="font-size:28px;display:block;margin-bottom:8px"></i>
+              <div style="font-weight:600;color:var(--slate);margin-bottom:4px">Connect a future data source</div>
+              <div style="margin-bottom:12px">Additional APIs can be connected here as the system grows.</div>
+              <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+                <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:10px">Clearbit</div>
+                <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:10px">Hunter.io</div>
+                <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:10px">Cognism</div>
+                <div style="background:var(--white);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:10px">Custom webhook</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Target Config -->
+        <div id="settab-targets" class="api-tab-pane">
+          <div class="divlabel">Account priority tiers — editable</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Drag to reorder. Click a label to rename it. Add or remove industries from each tier. Accounts in the top tier are always enriched first.</div>
+          <div class="priority-tiers">
+            <div class="tier-row">
+              <div class="tier-drag"><i class="ti ti-grip-vertical"></i></div>
+              <div class="tier-body">
+                <div class="tier-name-row"><input class="tier-name-input" value="P0 — Core ICP" /><span class="b b-p1" style="font-size:9px">Enriched first</span></div>
+                <div class="chips">
+                  <div class="chip">Pharma <span class="chip-x">×</span></div>
+                  <div class="chip">Insurance <span class="chip-x">×</span></div>
+                  <div class="chip">Private Banking <span class="chip-x">×</span></div>
+                  <button class="chip-add">+ Add industry</button>
+                </div>
+              </div>
+            </div>
+            <div class="tier-row">
+              <div class="tier-drag"><i class="ti ti-grip-vertical"></i></div>
+              <div class="tier-body">
+                <div class="tier-name-row"><input class="tier-name-input" value="P1 — Strong fit" /><span class="b b-p2" style="font-size:9px">Enriched second</span></div>
+                <div class="chips">
+                  <div class="chip">Manufacturing <span class="chip-x">×</span></div>
+                  <div class="chip">FMCG <span class="chip-x">×</span></div>
+                  <div class="chip">IT / ITES <span class="chip-x">×</span></div>
+                  <div class="chip">Automotive <span class="chip-x">×</span></div>
+                  <button class="chip-add">+ Add industry</button>
+                </div>
+              </div>
+            </div>
+            <div class="tier-row">
+              <div class="tier-drag"><i class="ti ti-grip-vertical"></i></div>
+              <div class="tier-body">
+                <div class="tier-name-row"><input class="tier-name-input" value="P2 — Opportunistic" /><span class="b b-p3" style="font-size:9px">Enriched third</span></div>
+                <div class="chips">
+                  <div class="chip">Logistics <span class="chip-x">×</span></div>
+                  <div class="chip">Real Estate <span class="chip-x">×</span></div>
+                  <div class="chip">Hospitality <span class="chip-x">×</span></div>
+                  <button class="chip-add">+ Add industry</button>
+                </div>
+              </div>
+            </div>
+            <div class="tier-row" style="opacity:.6;cursor:default">
+              <div class="tier-drag" style="cursor:default"><i class="ti ti-lock" style="font-size:12px"></i></div>
+              <div class="tier-body">
+                <div class="tier-name-row"><span style="font-size:11px;font-weight:600;color:var(--faint)">Inactive — not targeted</span><span style="font-size:9px;color:var(--faint);margin-left:8px">Cannot be deleted</span></div>
+                <div class="chips">
+                  <div class="chip" style="opacity:.6">Multinationals</div>
+                  <div class="chip" style="opacity:.6">Public sector / PSUs</div>
+                  <div class="chip" style="opacity:.6">Startups</div>
+                  <button class="chip-add">+ Add</button>
+                </div>
+              </div>
+            </div>
+            <div class="tier-add" onclick="alert('Add new tier')"><i class="ti ti-plus" style="margin-right:4px"></i>Add new priority tier</div>
+          </div>
+        </div>
+
+        <!-- Enrichment Prefs -->
+        <div id="settab-prefs" class="api-tab-pane">
+          <div class="sg2">
+            <div>
+              <div class="fl">Match confidence threshold <span style="color:var(--faint);font-weight:400">— auto-approve above this</span></div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+                <input type="range" class="slider" min="50" max="100" value="85" style="flex:1" />
+                <span style="font-weight:700;font-size:14px;color:var(--blue);min-width:36px">85%</span>
+              </div>
+              <div class="help-tip">Records above 85% with a confirmed email are saved automatically. Below it, you review manually. Default: 85%.</div>
+
+              <div style="margin-top:14px"><div class="fl">Pause between lookups (anti-throttle)</div>
+              <div class="range-row"><input class="range-input" value="3" /> <span style="font-size:11px;color:var(--muted)">to</span> <input class="range-input" value="9" /> <span style="font-size:11px;color:var(--muted)">seconds</span></div>
+              <div class="help-tip">A random pause between each lookup. Do not set below 2 seconds.</div></div>
+
+              <div style="margin-top:14px"><div class="fl">Email type to capture</div>
+              <div style="display:flex;gap:8px;margin-bottom:4px">
+                <label style="font-size:11px;display:flex;align-items:center;gap:5px"><input type="radio" name="emailtype" checked style="accent-color:var(--blue)" /> Work email only</label>
+                <label style="font-size:11px;display:flex;align-items:center;gap:5px"><input type="radio" name="emailtype" style="accent-color:var(--blue)" /> Work + personal</label>
+              </div>
+              <div class="help-tip">Apollo sometimes finds personal emails too. Default: work email only.</div></div>
+            </div>
+            <div>
+              <div class="fl">Daily enrichment limit</div>
+              <input class="fi" style="font-family:var(--font);font-size:12px" value="200" />
+              <div class="help-tip" style="margin-top:-4px;margin-bottom:10px">Auto-set from your Apollo plan. Lower to spread credits over more days.</div>
+
+              <div class="fl">Person lookup ratio</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+                <input type="range" class="slider" min="0" max="100" value="60" style="flex:1" />
+                <span style="font-weight:700;font-size:14px;color:var(--blue);min-width:36px">60%</span>
+              </div>
+              <div class="help-tip">Of today's accounts, look up the person for this percentage.</div>
+
+              <div style="margin-top:14px"><div class="fl">Timezone</div>
+              <select class="fsel" style="width:100%;font-size:12px"><option selected>IST — India Standard Time (UTC+5:30)</option><option>SGT — Singapore (UTC+8)</option><option>GMT — London (UTC+0)</option></select>
+              <div class="help-tip" style="margin-top:4px">Used to calculate midnight cutoff. A run will not start if it cannot complete before midnight.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Schedule — CANONICAL -->
+        <div id="settab-sched" class="api-tab-pane">
+          <div style="max-width:520px">
+            <div style="background:var(--amber-lt);border:1px solid rgba(217,119,6,.25);border-radius:7px;padding:9px 12px;font-size:11px;color:#92400E;margin-bottom:14px">
+              <b>This is the only place to configure the schedule.</b> All other screens show the schedule as read-only and link back here.
+            </div>
+            <div class="tgl-row"><span style="font-size:13px;font-weight:500">Enable scheduled runs</span><div class="tgl on" onclick="this.classList.toggle('on')"><div class="tglk"></div></div></div>
+            <div class="fl" style="margin-top:10px">Run at</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <input class="fi" style="font-family:var(--font);width:80px;margin:0" value="09:00" />
+              <select class="fsel"><option>AM</option><option>PM</option></select>
+              <select class="fsel"><option>IST (UTC+5:30)</option><option>SGT (UTC+8)</option><option>GMT (UTC+0)</option></select>
+            </div>
+            <div class="fl">Run on these days</div>
+            <div class="day-btns" style="margin-bottom:12px">
+              <button class="day-btn on">Mon</button><button class="day-btn on">Tue</button><button class="day-btn on">Wed</button><button class="day-btn on">Thu</button><button class="day-btn on">Fri</button><button class="day-btn">Sat</button><button class="day-btn">Sun</button>
+            </div>
+            <div style="background:var(--green-lt);border:1px solid rgba(5,150,105,.2);border-radius:6px;padding:9px 12px;font-size:11px;color:#065F46;margin-bottom:14px">
+              ✓ Runs every weekday at 9:00am IST<br>
+              <span style="color:var(--green);font-weight:600">Next run: Tomorrow, Mon 9 Jun at 9:00am IST</span>
+            </div>
+            <button class="pbtn">Save schedule</button>
+          </div>
+        </div>
+
+        <!-- Account Profile -->
+        <div id="settab-profile" class="api-tab-pane">
+          <div style="max-width:420px">
+            <div class="fl">Display name</div>
+            <input class="fi" style="font-family:var(--font);font-size:12px" placeholder="Your name" />
+            <div class="fl">Notification email <span style="color:var(--faint);font-weight:400">— editable, tied to your login</span></div>
+            <input class="fi" style="font-family:var(--font);font-size:12px" placeholder="your@email.com" />
+            <div class="help-tip" style="margin-top:-4px;margin-bottom:12px">Run completion summaries are sent here. Each user on the team has their own notification email.</div>
+            <button class="pbtn">Save profile</button>
+          </div>
+        </div>
+
+        <!-- Team -->
+        <div id="settab-team" class="api-tab-pane">
+          <div style="border:2px dashed #CBD5E1;border-radius:8px;padding:28px;text-align:center;font-size:11px;color:var(--faint)">
+            <i class="ti ti-users" style="font-size:28px;display:block;margin-bottom:8px"></i>
+            <div style="font-weight:600;color:var(--slate);margin-bottom:4px">Team management is coming soon</div>
+            <div>Invite team members, set per-user credit limits, assign roles (Owner / Editor / Viewer), and track usage per user.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    <!-- ══════════════ BUILD PLAN ══════════════ -->
+    <div id="view-buildplan" class="view">
+      <div class="ph">
+        <div><div class="pt">Build Plan</div><div class="ps">Audit · Architecture · Implementation plan · API status — developer handoff</div></div>
+        <span style="background:#F1F5F9;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:11px;color:var(--muted)">Last updated: Jun 8 2026</span>
+      </div>
+      <div class="ct">
+
+        <!-- What this product is -->
+        <div class="instr green" style="margin-bottom:16px">
+          <div class="instr-body">
+            <div class="instr-title"><i class="ti ti-info-circle" style="font-size:14px"></i>What this product is — read before writing code</div>
+            <div class="instr-text">A <b>lead enrichment tool</b>. It takes an existing contact database, finds who is currently in each target role at each company, verifies their email, and surfaces a clean approved list for downstream outreach.<br><b>It is not an outreach product.</b> No email sending. No campaign management. Outreach happens externally via Smartlead (Phase 2). Original source data is never overwritten.</div>
+          </div>
+        </div>
+
+        <!-- Audit -->
+        <div class="divlabel">A — Audit: what stays, moves, gets removed, gets renamed</div>
+        <div class="sg2" style="margin-bottom:14px">
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-check"></i>KEEP</div>
+            <div style="font-size:11px;color:#334155;line-height:2">
+              Dashboard stats cards + credit gauges<br>
+              Review queue concept (original vs found side by side)<br>
+              Enrichment waterfall (Apollo → Snov.io → Proxycurl)<br>
+              Confidence threshold (slider, configurable)<br>
+              Import with sheet selection<br>
+              Priority tiers (A/B/C → now user-defined P0/P1/P2…)<br>
+              Midnight safety check before runs<br>
+              Random delay between API calls<br>
+              Fill gaps / Re-check all modes<br>
+              Bulk approve for high-confidence records<br>
+              Per-run activity log
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-x"></i>REMOVE</div>
+            <div style="font-size:11px;color:#334155;line-height:2">
+              ZoomInfo as a data source (enterprise pricing, weak India data)<br>
+              Duplicate run config panel on Dashboard<br>
+              "Find Leads" nav item (out of scope — Phase 3+)<br>
+              Schedule toggle anywhere except Settings<br>
+              Hard-coded user names and emails<br>
+              Snov.io in primary Dashboard credit gauges<br>
+              Any config that lives outside Settings<br>
+              "Sheet" as a primary filter label
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-arrows-right-left"></i>MOVE</div>
+            <div style="font-size:11px;color:#334155;line-height:2">
+              Schedule toggle → Settings → Schedule tab (canonical only)<br>
+              Priority/grade filter → Enrichment Run screen only<br>
+              All API key fields → Settings → API Sources<br>
+              Record count per run → Enrichment Run screen<br>
+              Cron display on other screens → read-only + "Edit in Settings" link
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-pencil"></i>RENAME</div>
+            <div style="font-size:11px;color:#334155;line-height:2">
+              Grade A/B/C → Priority tiers (user-defined labels)<br>
+              Status → Enrichment Status<br>
+              Enriched → Awaiting Review<br>
+              Verified (record) → Approved<br>
+              Not found → No match found<br>
+              Verified (email) → Email confirmed<br>
+              Uncertain (email) → Unconfirmed<br>
+              Invalid (email) → Will bounce<br>
+              Fill empty records → Fill gaps<br>
+              Refresh existing → Re-check all<br>
+              Records (nav) → Accounts<br>
+              Enrichment (nav) → Run &amp; Review
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="divlabel">B — Proposed architecture</div>
+        <div class="card" style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:700;color:var(--slate);margin-bottom:10px">Stack decision</div>
+          <table class="tbl">
+            <thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td class="cc">Frontend</td><td>React + Tailwind CSS</td><td>Component reuse, fast iteration, matches design system</td></tr>
+              <tr><td class="cc">Backend</td><td>FastAPI (Python)</td><td>All enrichment APIs have Python SDKs. Data logic is Python-native.</td></tr>
+              <tr><td class="cc">Database</td><td>SQLite → PostgreSQL</td><td>SQLite for local dev. Schema must be portable — no SQLite-specific syntax.</td></tr>
+              <tr><td class="cc">Icons</td><td>lucide-react</td><td>Consistent, tree-shakeable. No other icon library.</td></tr>
+              <tr><td class="cc">Email notifications</td><td>Python smtplib</td><td>No external email service needed for run summaries.</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:12px;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:8px">Navigation — 4 screens + developer screen</div>
+          <div style="font-size:11px;color:#334155;background:#F8FAFC;border-radius:6px;padding:10px 12px;font-family:monospace;line-height:2">
+            Dashboard &nbsp;|&nbsp; Accounts &nbsp;|&nbsp; Run &amp; Review &nbsp;|&nbsp; Import Data &nbsp;|&nbsp; Settings<br>
+            <span style="color:var(--faint)">(Future: + Find Leads when Lead Search Agent is built in Phase 3)</span>
+          </div>
+          <div style="margin-top:12px;font-size:11px;font-weight:700;color:var(--slate);margin-bottom:8px">Folder structure</div>
+          <div style="font-size:10px;color:#334155;background:#F8FAFC;border-radius:6px;padding:10px 12px;font-family:monospace;line-height:1.9">
+            backend/<br>
+            &nbsp;&nbsp;main.py &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← FastAPI entry point<br>
+            &nbsp;&nbsp;models/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← SQLAlchemy models (see data model below)<br>
+            &nbsp;&nbsp;routers/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← API route handlers per screen<br>
+            &nbsp;&nbsp;services/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Apollo, Snov.io, Proxycurl connectors<br>
+            &nbsp;&nbsp;tasks/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← background enrichment job runner<br>
+            &nbsp;&nbsp;tests/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← pytest — write tests before features (TDD)<br>
+            frontend/<br>
+            &nbsp;&nbsp;src/pages/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Dashboard, Accounts, RunReview, Import, Settings<br>
+            &nbsp;&nbsp;src/components/ &nbsp;&nbsp;← StatsCard, ReviewTable, StatusBadge, PriorityTag<br>
+            &nbsp;&nbsp;src/lib/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← API client, utilities
+          </div>
+        </div>
+
+        <!-- Data model -->
+        <div class="divlabel">C — Data model (canonical entities)</div>
+        <div class="card" style="margin-bottom:14px">
+          <table class="tbl">
+            <thead><tr><th>Entity</th><th>Key fields</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><td class="cc">accounts</td><td>id, name, original_name, industry_vertical, icp_priority, is_inactive, city, enrichment_status, last_enriched_at</td><td>original_name never overwritten after import</td></tr>
+              <tr><td class="cc">contacts</td><td>id, account_id, original_*, enriched_*, confidence_score, email_status, review_state, lookup_trail (jsonb), run_id</td><td>original_* columns locked at import. enriched_* written by pipeline.</td></tr>
+              <tr><td class="cc">enrichment_runs</td><td>id, mode, status, run_config (jsonb snapshot), accounts_processed, contacts_found, credits_used_*, triggered_by</td><td>Config snapshot — never rely on live Settings for historical run data</td></tr>
+              <tr><td class="cc">activity_log</td><td>id, entity_type, entity_id, action, actor_id, actor_type, metadata (jsonb), created_at</td><td>Single unified log — filter by run, account, or contact</td></tr>
+              <tr><td class="cc">api_credentials</td><td>id, service, api_key_encrypted, plan_limit, credits_remaining, reset_date, status</td><td>Keys encrypted at rest. Never in .env files or code.</td></tr>
+              <tr><td class="cc">app_settings</td><td>key, value (jsonb), updated_at, updated_by</td><td>Single source of truth for all config. See key list below.</td></tr>
+              <tr><td class="cc">users (future)</td><td>id, name, email, notification_email, role, daily_credit_limit</td><td>Foundation only for v1. Full multi-user in Phase 3.</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px;font-size:10px;color:#334155;background:#F8FAFC;border-radius:6px;padding:9px 12px;font-family:monospace;line-height:1.9">
+            <b>app_settings keys:</b> schedule.enabled · schedule.time · schedule.timezone · schedule.days<br>
+            enrichment.confidence_threshold · enrichment.delay_min · enrichment.delay_max<br>
+            enrichment.email_type · enrichment.daily_quota · enrichment.person_ratio<br>
+            icp.priorities · icp.target_roles · icp.inactive_verticals
+          </div>
+        </div>
+
+        <!-- API status -->
+        <div class="divlabel">D — API integrations: feasibility confirmed</div>
+        <div class="card" style="margin-bottom:14px">
+          <table class="tbl">
+            <thead><tr><th>API</th><th>Status</th><th>India coverage</th><th>Cost</th><th>Used for</th></tr></thead>
+            <tbody>
+              <tr><td class="cc">Apollo.io</td><td><span style="color:var(--green);font-weight:600">✅ Full REST API</span></td><td>Good for large/mid-cap</td><td>~$99/mo (1,000 credits)</td><td>Primary enrichment — finds current role holder at any company</td></tr>
+              <tr><td class="cc">Snov.io</td><td><span style="color:var(--green);font-weight:600">✅ Full REST API</span></td><td>Global</td><td>~$39/mo</td><td>Email verification (silent SMTP) + fallback email finding</td></tr>
+              <tr><td class="cc">Proxycurl</td><td><span style="color:var(--green);font-weight:600">✅ Full REST API</span></td><td>Global</td><td>~$0.03/lookup</td><td>LinkedIn profile data — only practical LinkedIn API</td></tr>
+              <tr><td class="cc">ZeroBounce</td><td><span style="color:var(--green);font-weight:600">✅ Full REST API</span></td><td>Global</td><td>~$18/mo (500 credits)</td><td>Email address validation before outreach</td></tr>
+              <tr><td class="cc">LinkedIn Sales Nav</td><td><span style="color:var(--amber);font-weight:600">⚠ No public API</span></td><td>—</td><td>$79-135/seat</td><td>Use Proxycurl instead — same data, proper API</td></tr>
+              <tr><td class="cc">Smartlead (Phase 2)</td><td><span style="color:var(--blue);font-weight:600">✅ Full API — Phase 2</span></td><td>Global</td><td>~$39/mo</td><td>Email sequencing for outreach — not in Phase 1</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:8px;font-size:10px;color:var(--amber);background:var(--amber-lt);border-radius:5px;padding:6px 9px">⚠ Apollo caveat: Strong for large companies (Cipla, HDFC, Lupin). Run 50 test lookups on your target list before committing. If hit rate is below 60%, increase Proxycurl usage as secondary source.</div>
+        </div>
+
+        <!-- Implementation plan -->
+        <div class="divlabel">E — Implementation plan (phased)</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:5px"><i class="ti ti-alert-circle"></i>P0 — Must fix before first real use</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:#334155">
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Remove schedule toggle from all screens except Settings → Schedule</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Always show timezone next to every scheduled time (e.g. "9:00am IST" not "9:00am")</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Fix review queue — clear "Original" / "Found today" column headers, table view not card grid</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Fix all status renames: Awaiting Review, Approved, No match found — update everywhere</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Fix currency — use $ for API costs, ₹ for business data. Never mix on same screen.</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Remove ZoomInfo. Replace with "+ Add future source" placeholder.</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Remove run configuration panel from Dashboard. Dashboard = status only.</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Add help text to Fill gaps / Re-check all mode selector</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Midnight safety check before every run start — block if run would cross midnight in configured timezone</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>original_* columns: verify they are written only at import time and never overwritten in any save path</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>TDD: write edge case tests before writing each feature. Source: requirements.md Section 8.</span></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:10px;display:flex;align-items:center;gap:5px"><i class="ti ti-adjustments"></i>P1 — Important usability improvements</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:#334155">
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Rename Grade A/B/C → Priority tiers with user-editable labels (P0/P1/P2 or custom)</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Show confidence score on review queue rows without needing to expand</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Show source attribution trail on every expanded review row</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Add tooltips to all major Settings fields (confidence threshold, delay, email type, quota)</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Post-run summary screen: auto-approved count, review needed count, credits used</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>"New contacts found" section post-run — separate from review queue</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Perplexity fallback prompt when all APIs fail — copyable text block</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Estimated time remaining shown in live run progress view</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Inactive badge on account rows — greyed out, not hidden, never included in runs</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Run history list accessible from Dashboard — past runs with config + outcome</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Instruction-led banners on each screen with "Got it, don't show again" dismiss</span></label>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:10px;display:flex;align-items:center;gap:5px"><i class="ti ti-users"></i>P2 — Multi-user foundations</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:#334155">
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Users table: id, name, email, notification_email, role (owner/editor/viewer), daily_credit_limit</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Per-user notification email in Settings → Account Profile</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Credit usage tracked per user (groundwork for future per-user limits)</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Team tab in Settings: invite, roles, per-user credit allocation</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Viewer / Editor / Owner roles enforced on all routes</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>CSV + JSON export endpoint for downstream agents (Smartlead, Lemlist, CRM)</span></label>
+              <label style="display:flex;align-items:flex-start;gap:7px"><input type="checkbox" style="accent-color:var(--blue);margin-top:1px;flex-shrink:0" /><span>Rate-limit enforcement per user to protect API fair usage</span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dev rules -->
+        <div class="divlabel">F — Developer rules (non-negotiable)</div>
+        <div class="card">
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:#334155">
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">1.</span><span><b>TDD first</b> — write tests for edge cases before writing the feature. No feature ships without a passing test.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">2.</span><span><b>No technical jargon in UI</b> — "catch-all domain" → "Uncertain — can't confirm without sending". "429 rate limit" → "API is busy — pausing briefly". Every error must tell the user what to do next.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">3.</span><span><b>Never overwrite source data</b> — original_* columns are written once at import and locked. Any write path that touches them is a bug.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">4.</span><span><b>Credit safety</b> — check available credits before every batch starts, not during. A run that would exceed quota must be blocked before it begins.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">5.</span><span><b>Midnight safety</b> — calculate estimated completion time before starting. Block the run if it would cross midnight in the configured timezone.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">6.</span><span><b>Random API delay</b> — every enrichment loop must sleep random(delay_min, delay_max) seconds between calls. Default 3–9s. Never call APIs in a tight loop.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">7.</span><span><b>One run at a time</b> — if a run is active, the Start button is disabled. No concurrent runs.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">8.</span><span><b>API keys encrypted at rest</b> — stored in api_credentials table, encrypted. Never in .env files, never in code, never in logs.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">9.</span><span><b>Background runs</b> — enrichment executes as a background task. UI polls for status. User is notified via email on completion.</span></div>
+            <div style="display:flex;gap:8px"><span style="color:var(--red);font-weight:700;flex-shrink:0">10.</span><span><b>Settings = single source of truth</b> — no screen other than Settings owns configuration. Other screens display config summaries with "Edit in Settings" links.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+<!-- ══════════════ AGENT MODAL ══════════════ -->
+<div id="ag-overlay" class="ag-overlay" style="display:none">
+  <div class="ag-panel">
+    <div class="ag-header">
+      <div class="ag-title"><span id="ag-pulse" class="pulse"></span><span id="ag-title">Lead Enrichment — Run #14 in progress</span></div>
+      <button class="ag-close" onclick="closeAgent()">×</button>
+    </div>
+    <div class="ag-cards">
+      <div class="ag-card waiting" id="agc1"><div style="font-size:18px;margin-bottom:4px">📋</div><div class="ag-cname">Agent 1 — List Agent</div><div class="ag-cstatus" id="ags1">Waiting to start</div></div>
+      <div class="ag-card waiting" id="agc2"><div style="font-size:18px;margin-bottom:4px">🔍</div><div class="ag-cname">Agent 2 — Enrichment Agent</div><div class="ag-cstatus" id="ags2">Waiting for Agent 1</div></div>
+      <div class="ag-card waiting" id="agc3"><div style="font-size:18px;margin-bottom:4px">✅</div><div class="ag-cname">Agent 3 — Verify Agent</div><div class="ag-cstatus" id="ags3">Waiting for Agent 2</div></div>
+    </div>
+    <div class="ag-log" id="ag-log"></div>
+    <div class="ag-footer">
+      <div class="ag-prog-wrap">
+        <div class="ag-prog-label"><span id="ag-prog-label">Initialising...</span><span id="ag-prog-count">0 / 50</span></div>
+        <div class="ag-prog-bar"><div class="ag-prog-fill" id="ag-prog-fill" style="width:0%"></div></div>
+      </div>
+      <button class="ag-done-btn" id="ag-done-btn" onclick="closeAgent()">View results →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Tooltip engine ── */
+var gtip=document.createElement('div');
+gtip.id='gtip';document.body.appendChild(gtip);
+var gtimer;
+document.addEventListener('mouseover',function(e){
+  var el=e.target.closest('[data-tip]');
+  clearTimeout(gtimer);
+  if(!el){gtip.classList.remove('show');return;}
+  gtimer=setTimeout(function(){
+    gtip.innerHTML=el.getAttribute('data-tip');
+    gtip.classList.add('show');
+  },280);
+});
+document.addEventListener('mousemove',function(e){
+  if(!gtip.classList.contains('show'))return;
+  var x=e.clientX+14,y=e.clientY+18;
+  if(x+260>window.innerWidth)x=e.clientX-268;
+  if(y+100>window.innerHeight)y=e.clientY-68;
+  gtip.style.left=x+'px';gtip.style.top=y+'px';
+});
+document.addEventListener('mouseout',function(e){
+  if(!e.target.closest('[data-tip]')){clearTimeout(gtimer);gtip.classList.remove('show');}
+});
+
+/* ── Instruction dismiss ── */
+var dismissed = JSON.parse(localStorage.getItem('le_dismissed')||'{}');
+function dismissInstr(id){
+  dismissed[id]=true;
+  localStorage.setItem('le_dismissed',JSON.stringify(dismissed));
+  document.getElementById(id).classList.add('hidden');
+}
+function applyDismissed(){
+  Object.keys(dismissed).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.classList.add('hidden');
+  });
+}
+document.addEventListener('DOMContentLoaded', applyDismissed);
+
+var timers=[];
+function sw(n,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+n).classList.add('active');
+  if(el) el.classList.add('active');
+}
+function swTab(group,n,el){
+  document.querySelectorAll('[id^="'+group+'-"]').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(group+'-'+n).classList.add('active');
+  el.classList.add('active');
+}
+function swApiTab2(n,el){
+  document.querySelectorAll('#settabs ~ .api-tab-pane').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#settabs .api-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('settab-'+n).classList.add('active');
+  el.classList.add('active');
+}
+function swApiTab3(n,el){
+  document.querySelectorAll('[id^="apisrc-"]').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#apisrctabs .api-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('apisrc-'+n).classList.add('active');
+  el.classList.add('active');
+}
+function toggleExpand(id){
+  var row=document.getElementById(id);
+  row.style.display=row.style.display==='none'?'table-row':'none';
+}
+
+/* Agent simulation */
+function closeAgent(){
+  document.getElementById('ag-overlay').style.display='none';
+  timers.forEach(clearTimeout);timers=[];
+}
+function addLog(msg,type,delay){
+  timers.push(setTimeout(function(){
+    var log=document.getElementById('ag-log');
+    var now=new Date();
+    var ts='09:'+String(14+Math.floor(delay/8000)).padStart(2,'0')+':'+String(Math.floor(delay/1000)%60).padStart(2,'0');
+    var l=document.createElement('div');
+    l.className='log-line '+(type||'');
+    l.innerHTML='<span class="log-ts">['+ts+']</span><span class="log-msg">'+msg+'</span>';
+    log.appendChild(l);log.scrollTop=log.scrollHeight;
+  },delay));
+}
+function setCard(id,state,status,delay){
+  timers.push(setTimeout(function(){
+    document.getElementById('agc'+id).className='ag-card '+state;
+    var s=document.getElementById('ags'+id);
+    s.className='ag-cstatus '+(state==='running'?'running':state==='done'?'done':'');
+    s.textContent=status;
+  },delay));
+}
+function setProgress(label,n,total,delay){
+  timers.push(setTimeout(function(){
+    document.getElementById('ag-prog-label').textContent=label;
+    document.getElementById('ag-prog-count').textContent=n+' / '+total;
+    document.getElementById('ag-prog-fill').style.width=Math.round(n/total*100)+'%';
+  },delay));
+}
+function runAgent(){
+  document.getElementById('ag-overlay').style.display='flex';
+  document.getElementById('ag-log').innerHTML='';
+  document.getElementById('ag-done-btn').style.display='none';
+  document.getElementById('ag-prog-fill').style.width='0%';
+  document.getElementById('ag-title').textContent='Lead Enrichment — Run #14 in progress';
+  timers.forEach(clearTimeout);timers=[];
+  ['1','2','3'].forEach(function(n){
+    document.getElementById('agc'+n).className='ag-card waiting';
+    document.getElementById('ags'+n).className='ag-cstatus';
+  });
+  var d=180;
+  setCard(1,'running','Fetching accounts...',100);
+  setProgress('Agent 1 — fetching accounts',0,50,100);
+  addLog('── Agent 1: List Agent ──','head',d*1);
+  addLog('Fetching 50 accounts (P0 — Core ICP, Fill gaps mode)...','info',d*2);
+  addLog('✓ 50 accounts loaded · Pharma: 22 · Insurance: 18 · Banking: 10','ok',d*3);
+  addLog('Checking against active records...','info',d*4);
+  addLog('✓ All 50 cleared — no conflicts','ok',d*5);
+  setCard(1,'done','Complete — 50 accounts ready',d*6);
+  setProgress('Agent 1 complete',50,50,d*6);
+
+  setCard(2,'running','Querying Apollo.io...',d*7);
+  addLog('── Agent 2: Enrichment Agent ──','head',d*8);
+  addLog('Sending batch to Apollo.io (50 accounts)...','info',d*9);
+  setProgress('Agent 2 — querying Apollo',0,50,d*9);
+  addLog('Apollo → Cipla Ltd · Head of Travel... <b>found ✓</b> (91%)','ok',d*10);
+  setProgress('Agent 2 — querying Apollo',10,50,d*10);
+  addLog('Apollo → Sun Pharma · Admin Head... <b>found ✓</b> (87%)','ok',d*12);
+  setProgress('Agent 2 — querying Apollo',20,50,d*12);
+  addLog('Apollo → HDFC Life · Head of Admin... <b>found ✓</b> (72%) → needs review','warn',d*14);
+  setProgress('Agent 2 — querying Apollo',32,50,d*14);
+  addLog('Apollo → Lupin Ltd · Head of Travel... <b>found ✓</b> (68%) → needs review','warn',d*16);
+  setProgress('Agent 2 — querying Apollo',42,50,d*16);
+  addLog('Apollo → Tata Chemicals · Admin Head... <b>no match found</b>','err',d*18);
+  setProgress('Agent 2 — querying Apollo',50,50,d*20);
+  addLog('✓ Apollo complete · <b>45 found</b> · 5 no match · 2 need review','ok',d*21);
+  setCard(2,'done','Complete — 45 contacts found',d*22);
+
+  setCard(3,'running','Verifying emails...',d*23);
+  addLog('── Agent 3: Verify Agent ──','head',d*24);
+  addLog('Sending 45 emails to Snov.io for verification...','info',d*25);
+  addLog('suresh.nair@cipla.com → <b>confirmed ✓</b>','ok',d*26);
+  addLog('r.prakash@sunpharma.com → <b>confirmed ✓</b>','ok',d*27);
+  addLog('m.krishnan@hdfclife.com → <b>unconfirmed ⚠</b> (catch-all domain)','warn',d*28);
+  addLog('s.rao@lupin.com → <b>confirmed ✓</b>','ok',d*29);
+  addLog('✓ 43 confirmed · 2 unconfirmed · 0 will bounce','ok',d*31);
+  addLog('Auto-approving 23 records (≥85% confidence + confirmed email)...','info',d*32);
+  addLog('Sending 22 records to Review Queue (below threshold or unconfirmed)...','info',d*33);
+  addLog('Notifying sales leader by email...','info',d*34);
+  addLog('✓ <b>Run #14 complete</b> · 23 auto-approved · 22 in review queue · 5 no match','ok',d*36);
+  setCard(3,'done','Complete — 23 approved, 22 in queue',d*37);
+  setProgress('Run complete — check Review Queue',50,50,d*37);
+  timers.push(setTimeout(function(){
+    document.getElementById('ag-pulse').style.background='#22C55E';
+    document.getElementById('ag-title').textContent='✓ Run #14 complete — 23 auto-approved · 22 need review';
+    document.getElementById('ag-done-btn').style.display='block';
+  },d*38));
+}
+</script>
+</body>
+</html>
